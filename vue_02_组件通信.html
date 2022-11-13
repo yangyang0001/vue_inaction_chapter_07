@@ -1,0 +1,390 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>组件通信</title>
+    <script src="https://cdn.jsdelivr.net/npm/vue@2/dist/vue.js"></script>
+</head>
+
+<body>
+    <p>------------------------------ app1 子组件向父组件传递数据 v-on ----------------------------</p>
+    <div id="app1">
+        <p>总数: {{total}}</p>
+        <app1-component @increase="handleGetTotal" @reduce="handleGetTotal"></app1-component>
+    </div>
+    
+    <p>------------------------------ app2 子组件向父组件传递数据 @input ----------------------------</p>
+    <div id="app2">
+        <p>总数: {{total}}</p>
+        <app2-component @input="handleGetTotal"></app2-component>
+    </div>
+    
+    <p>------------------------------ app3 子组件向父组件传递数据 v-model ----------------------------</p>
+    <div id="app3">
+        <p>总数: {{total}}</p>
+        <app3-component v-model="total"></app3-component>
+    </div>
+    
+    <p>------------------------------ TODO: app4 子组件和父组件无法做到双向绑定(书籍读到次数, 无法解决, 书籍后面可以解决) ----------------------------</p>
+    <div id="app4">
+        <p>外部总数: {{total}}</p>
+        <app4-component v-model="total"></app4-component>
+        <span>组件外部按钮 影响组件内部数据变化: </span>
+        <button @click="outerIncrease">+1</button>&nbsp;&nbsp;
+        <button @click="outerReduce">-1</button>
+    </div>
+    
+    <p>------------------------------ app5 子组件和父组件双向数据绑定 ----------------------------</p>
+    <div id="app5">
+        <p>外部总数: {{total}}</p>
+        <app5-component v-model="total"></app5-component>
+        <p><button @click="outerReduce">-1</button></p>
+        
+    </div>
+    
+    <p>------------------------------ app7 教科书中的 v-model 数据双向绑定组件 ----------------------------</p>
+    <div id="app6">
+        <p>外部总数: {{total}}</p>
+        <app5-component v-model="total"></app5-component>
+        <p><button @click="outerReduce">-1</button></p>
+    </div>
+    
+    <p>------------------------------ app7 非父子组件间的数据通信 ----------------------------</p>
+    <div id="app7">
+        <p>{{message}}</p>
+        <component-a></component-a>
+    </div>
+    
+    <p>------------------------------ TODO: app8 使用 $emit 和 $on 以及中央事件总线 bus 完成数据双向绑定 ----------------------------</p>
+    <div id="app8">
+        <p>外部总数: {{total}}</p>
+        <app8_component v-model="total"></app8_component>
+        <span>组件外部按钮 影响组件内部数据变化: </span>
+        <button @click="outerIncrease">外部按钮+1</button>&nbsp;&nbsp;
+        <button @click="outerReduce">外部按钮-1</button>
+    </div>
+    
+    <p>------------------------------ app9 父链直接访问 父组件中的数据值, 用到 $parent ----------------------------</p>
+    <div id="app9">
+        <p>父组件中的属性值: {{message}}</p>
+        <app9-component></app9-component>
+    </div>
+    
+    <p>------------------------------ app10 子组件索引, 通过索引直接访问子组件数据值, 用到 $refs ----------------------------</p>
+    <div id="app10">
+        <app10-component ref="app10_component"></app10-component>
+        <button @click="handleRef">根据子组件索引获取子组件中的属性</button>
+    </div>
+
+    <script>
+        Vue.component("app1-component", {
+            template: 
+                '<div>' + 
+                '<button @click="handleIncrease">+1</button>' +     // 调用组件方法!
+                '&nbsp;&nbsp;' +
+                '<button @click="handleReduce">-1</button>' + 
+                '</div>',
+            data: function() {
+                return {counter : 0}
+            },
+            methods: {
+                handleIncrease: function() {
+                    this.counter++;
+                    this.$emit('increase', this.counter);
+                },
+                handleReduce: function() {
+                    this.counter--;
+                    this.$emit('reduce', this.counter);
+                }
+            },
+        });
+        const app1 = new Vue({
+            el: '#app1',
+            data: {
+                total: 0
+            },
+            methods: {
+                handleGetTotal: function(total) {
+                    this.total = total;
+                }
+            }
+        });
+
+        Vue.component("app2-component", {
+            template: 
+                '<div>' + 
+                '<button @click="handleClick">+1</button>' +     // 调用组件方法!
+                '</div>',
+            data: function() {
+                return {
+                    counter : 0
+                }
+            },
+            methods: {
+                handleClick: function() {
+                    this.counter++;
+                    this.$emit('input', this.counter);
+                }
+            }
+        });
+        const app2 = new Vue({
+            el: '#app2',
+            data: {
+                total : 0
+            },
+            methods: {
+                handleGetTotal: function(total) {
+                    this.total = total;
+                }
+            }
+        });
+
+        Vue.component("app3-component", {
+            template: 
+                '<div>' + 
+                '<button @click="handleClick">+1</button>' +     // 调用组件方法!
+                '</div>',
+            data: function() {
+                return {
+                    counter : 0
+                }
+            },
+            methods: {
+                handleClick: function() {
+                    this.counter++;
+                    this.$emit('input', this.counter);
+                }
+            }
+        });
+        const app3 = new Vue({
+            el: '#app3',
+            data: {
+                total: 0
+            }
+        });
+
+        Vue.component("app4-component", {
+            props: ['value'],
+            template: 
+                '<div>' + 
+                '组件内部按钮 影响组件外部数据变化: ' + 
+                '<button @click="innerIncrease">+1</button>' +     // 调用组件方法!
+                '&nbsp;&nbsp;' +
+                '<button @click="innerReduce">-1</button>' + 
+                '<p>外部总数: {{value}}</p>' + 
+                '<p>内部总数: {{counter}}</p>' + 
+                '</div>',
+            data: function() {
+                return {
+                    counter : this.value
+                };
+            },
+            methods: {
+                innerIncrease: function() {
+                    this.counter++;
+                    this.$emit('input', this.counter);
+                },
+                innerReduce: function() {
+                    this.counter--;
+                    this.$emit('input', this.counter);
+                }
+            }
+        });
+        const app4 = new Vue({
+            el: '#app4',
+            data:{
+                total : 10
+            },
+            methods: {
+                outerIncrease: function() {
+                    this.total++;
+                },
+                outerReduce: function() {
+                    this.total--;
+                }
+            }
+        });
+
+        Vue.component("app5-component", {
+            props: ['value'],
+            template: '<input :value="value" @input="innerIncrease"></input>',
+            methods: {
+                innerIncrease: function(event) {
+                    console.log("event is :" + JSON.stringify(event));
+                    console.log("event.target is :" + event.target);
+                    console.log("event.target.value is :" + event.target.value);
+                    this.$emit('input', event.target.value);
+                },
+            }
+
+        });
+        const app5 = new Vue({
+            el: '#app5',
+            data: {
+                total : 0
+            },
+            methods: {
+                outerReduce: function() {
+                    this.total--;
+                }
+            }
+        });
+
+        Vue.component("app6-component", {
+            props:['value'],
+            template: '<input :value="value" :input="bindData"></input>',
+            methods: {
+                bindData: function(event) {
+                    this.$emit('input', event.target.value);
+                }
+            }
+        });
+        const app6 = new Vue({
+            el: '#app6',
+            data: {
+                total : 100
+            },
+            methods: {
+                outerReduce: function() {
+                    this.total--;
+                }
+            }
+        });
+
+        var bus = new Vue();
+        Vue.component("component-a", {
+            template: '<input @blur="handleEvent" v-model="message"></input>',
+            data: function() {
+                return {
+                    message: ''
+                }
+            },
+            methods: {
+                handleEvent: function() {
+                    bus.$emit('on-message', this.message);
+                }
+            }
+        });
+        const app7 = new Vue({
+            el: '#app7',
+            data: {
+                message: ''
+            },
+            mounted() {
+                var _this = this;
+                bus.$on('on-message', function(message) {
+                    _this.message = message;
+                })
+            },
+        });
+
+        var app8_bus = new Vue();
+        Vue.component("app8_component", {
+            props: ['value'],
+            template: 
+                '<div>' + 
+                '组件内部按钮 影响组件外部数据变化: ' + 
+                '<button @click="innerIncrease">内部按钮+1</button>' +     // 调用组件方法!
+                '&nbsp;&nbsp;' +
+                '<button @click="innerReduce">内部按钮-1</button>' + 
+                '<p>外部总数: {{value}}</p>' + 
+                '<p>内部总数: {{counter}}</p>' + 
+                '</div>',
+            data: function() {
+                return {
+                    counter : this.value
+                }
+            },
+            methods: {
+                innerIncrease: function() {
+                    this.counter++;
+                    app8_bus.$emit('innerIncrease', this.counter);
+                },
+                innerReduce: function() {
+                    this.counter--;
+                    app8_bus.$emit('innerReduce', this.counter);
+                },
+            },
+            mounted() {
+                var _this = this;
+                app8_bus.$on('outerIncrease', function(total) {
+                    _this.counter = total;
+                });
+                app8_bus.$on('outerReduce', function(total) {
+                    _this.counter = total;
+                });
+            }
+        });
+        const app8 = new Vue({
+            el: '#app8',
+            data: {
+                total : 10
+            },
+            methods: {
+                outerIncrease: function() {
+                    this.total++;
+                    app8_bus.$emit('outerIncrease', this.total);
+                    
+                },
+                outerReduce: function() {
+                    this.total--;
+                    app8_bus.$emit('outerReduce', this.total);
+                }
+            },
+            mounted() {
+                var _this = this;
+                app8_bus.$on('innerIncrease', function(counter) {
+                    _this.total = counter;
+                });
+                app8_bus.$on('innerReduce', function(counter) {
+                    _this.total = counter;
+                });
+            }
+        });
+
+        Vue.component("app9-component", {
+            template: '<button @click="parentMsg">获取$parent.message</button>',
+            data: function() {
+                return {}
+            },
+            methods: {
+                parentMsg: function() {
+                    console.log(this.$parent.message);
+                    var date = new Date();
+                    this.$parent.message += date;
+                }
+            }
+        });
+        const app9 = new Vue({
+            el: '#app9',
+            data: {
+                message: 'parent message is welcome to component data!'
+            }
+        });
+        
+        Vue.component("app10-component", {
+            template: '<div>子组件</div>',
+            data: function() {
+                return {
+                    message: 'abcdefghijklmn'
+                }
+            },
+        });
+        const app10 = new Vue({
+            el: '#app10', 
+            data: {
+
+            },
+            methods: {
+                handleRef: function() {
+                    console.log(this.$refs.app10_component.message);
+                }
+            }
+        });
+    </script>
+</body>
+
+</html>

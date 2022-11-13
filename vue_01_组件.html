@@ -1,0 +1,237 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>vue组件详解</title>
+    <script src="https://cdn.jsdelivr.net/npm/vue@2/dist/vue.js"></script>
+</head>
+
+<body>
+
+    <!-- 全局组件的使用 -->
+    <div id="app1">
+        <my-component></my-component>
+    </div>
+    
+    <!-- 局部组件的使用 -->
+    <div id="app2">
+        <my-component></my-component>
+    </div>
+    
+    <!-- 引用组件的特殊形式 is -->
+    <div id="app3">
+        <table>
+            <tbody is="my-component"></tbody>
+        </table>
+    </div>
+    
+    <!-- 组件数据 必须使用 function 且 return 对象 -->
+    <div id="app4">
+        <data-component></data-component>
+    </div>
+    
+    <!-- 组件数据 全局数据的使用 -->
+    <div id="app5">
+        <data-component-counter></data-component-counter>
+        <data-component-counter></data-component-counter>
+        <data-component-counter></data-component-counter>
+    </div>
+    
+    <!-- 组件数据 每个组件都使用自己的数据 -->
+    <div id="app6">
+        <data-component-inner></data-component-inner>
+        <data-component-inner></data-component-inner>
+        <data-component-inner></data-component-inner>
+    </div>
+    
+    <!-- 组件数据的传递, 从父组件向子组件传递使用 props 属性 -->
+    <div id="app7">
+        <static-data-component message="static-data"></static-data-component>
+    </div>
+    
+    <!-- 组件数据的传递, 从父组件向子组件传递使用 props 属性, 传递动态数据, v-bind -->
+    <div id="app8">
+        <input type="text" v-model="message" placeholder="请输入组件内容..."></input>
+        <dynamic-data-component :message="message"></dynamic-data-component>
+    </div>
+
+    <!-- 单向数据流 -->
+    <div id="app9">
+        <props-component :init_count="100"></props-component>
+    </div>
+
+    <div id="app10">
+        <computed-component :width="100"></computed-component>
+    </div>
+
+
+    <script>
+        // ------------------------------ 全局组件的使用 ----------------------------
+        Vue.component("my-component", {       // 组件名称: 最好使用 小写字母 + 横线分割的方式!
+            // 选项
+            template: '<div>全局注册组件的内容</div>' // template 必须是 DOM 元素包裹, 否则不能展示!
+        }); 
+
+        const app1 = new Vue({
+            el: '#app1',
+            data: {
+
+            }
+        });
+
+        // ------------------------------ 局部组件的使用 ----------------------------
+        var Child = {
+            template: '<div>局部注册组件的内容</div>'
+        }
+        const app2 = new Vue({
+            el: '#app2',
+            data: {},
+            components: {
+                'my-component' : Child
+            }
+        });
+        
+        // ------------------------------ tbody 使用 is 渲染组件 ----------------------------
+        const app3 = new Vue({
+            el: '#app3',
+            data: {},
+        });
+        
+        // ------------------------------ 组件中使用 data ----------------------------
+        Vue.component("data-component", {
+            template: '<div>{{message}}</div>',
+            data: function() {
+                return {
+                    message: '组件数据'
+                }
+            }
+        });
+        const app4 = new Vue({
+            el: '#app4',
+        });
+
+        // ------------------------------ 全局 data 的使用 ----------------------------
+        var data = {counter : 0}
+        Vue.component("data-component-counter", {
+            template: '<button @click="counter++">{{counter}}</button>',
+            data: function() {
+                return data;
+            }
+        });
+        const app5 = new Vue({
+            el: '#app5',
+        });
+        
+        // ------------------------------ 局部 data 的使用 ----------------------------
+        Vue.component("data-component-inner", {
+            template: '<button @click="counter++">{{counter}}</button>',
+            data: function() {
+                return {counter : 0}
+            }
+        });
+        const app6 = new Vue({
+            el: '#app6',
+            data: {}
+        });
+
+        // ------------------------------ 父组件中向子组件传递数据 ----------------------------
+        Vue.component("static-data-component", {
+            props: ['message'],
+            template: '<div>{{message}}</div>',
+        });
+        const app7 = new Vue({
+            el: '#app7'
+        });
+        
+        // ------------------------------ 父组件中向子组件传递数据 ----------------------------
+        Vue.component("dynamic-data-component", {
+            props: ['message'],
+            template: '<div>{{message}}</div>'
+        });
+        const app8 = new Vue({
+            el: '#app8',
+            data: {
+                message : 'dynamic-data'
+            }
+        });
+        
+        // ------------------------------ 组件内部接收 父组件的数据, 然后使用自己的 data 渲染 ----------------------------
+        Vue.component("props-component", {
+            props: ['init_count'],
+            template: '<div>{{count}}</div>',
+            data: function() {
+                return {
+                    count: this.init_count
+                }
+            }
+        });
+        const app9 = new Vue({
+            el: '#app9',
+            data: {}
+        });
+        
+        // ------------------------------ 组件内部接收 父组件的数据, 使用计算属性 ----------------------------
+        Vue.component("computed-component", {
+            props: ['width'],
+            template: '<div :style="styles">组件内容</div>',
+            computed: {
+                styles: function() {
+                    return {
+                        width : this.width + 'px',
+                        'background-color' : '#892add'
+                    }
+                }
+            }
+        });
+        const app10 = new Vue({
+            el: '#app10',
+            data: {}
+        });
+
+        // TODO: 暂时提供一个 校验的代码形式, 后面通过 案例进行使用!
+        Veu.component("mine-check-component", {
+            props: {
+                // 必须是数字类型
+                propA : Number,
+
+                // 必须是字符串或数字类型
+                propB : [String, Number],
+
+                // 布尔值，如果没有定义，默认值就是 true
+                propC: {
+                    type : Boolean,
+                    default : true
+                },
+
+                // 数字，而且是必传
+                propD: {
+                    type: Number,
+                    required : true
+                },
+
+                // 如果是数组或对象，默认值必须是一个函数来返回
+                propE: {
+                    type : Array,
+                    default : function () {
+                        return [] ;
+                    }
+                },
+
+                // 自定义一个验证函数
+                propF: {
+                    validator : function (value) {
+                        return value > 10;
+                    }
+                }
+            }
+        });
+
+
+    </script>
+
+</body>
+
+</html>

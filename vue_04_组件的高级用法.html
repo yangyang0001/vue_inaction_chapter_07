@@ -1,0 +1,122 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>组件的高级用法</title>
+    <script src="https://cdn.jsdelivr.net/npm/vue@2/dist/vue.js"></script>
+</head>
+
+<body>
+    <p>------------------------------ app1 递归组件 ----------------------------</p>
+    <div id="app1">
+        <app1-component :count="1" :msg="message">
+            <p>hello world</p>
+        </app1-component>
+    </div>
+    
+    <p>------------------------------ app2 内联模版 ----------------------------</p>
+    <div id="app2">
+        <app2-component :message="message" inline-template>
+            <p>父组件中为子组件创建组件模版 &nbsp; &nbsp; 外部数据: {{message}} &nbsp; &nbsp; 内部数据: {{msg}}</p>
+        </app2-component>
+    </div>
+    
+    <p>------------------------------ app3 动态组件 ----------------------------</p>
+    <div id="app3">
+        <component :is="currentView"></component><br/>
+        <button @click="handleChangeView('A')">A组件</button>
+        <button @click="handleChangeView('B')">B组件</button>
+        <button @click="handleChangeView('C')">C组件</button>
+    </div>
+    
+    <p>------------------------------ app4 异步组件 ----------------------------</p>
+    <div id="app4">
+        <app4-component></app4-component>
+    </div>
+    
+
+    
+    <script>
+
+        Vue.component("app1-component", {
+            props: {
+                count: {
+                    type: Number,
+                    default: 0
+                },
+                msg: {
+                    type: String,
+                    default: 'lisi'
+                }
+            },
+            template: 
+                '<div>' + 
+                '<p>{{msg}} --- count is: {{count}}</p>' + 
+                '<app1-component :count = "count + 1" :msg="msg" v-if="count < 3"></app1-component>' +
+                '</div>',
+        });        
+        const app1 = new Vue({
+            el: '#app1',
+            data: {
+                message : 'zhangsan'
+            }
+        });
+
+        Vue.component("app2-component", {
+            props: ['message'],
+            data: function() {
+                return {
+                    msg: 'inner data'
+                }
+            }
+        });
+        const app2 = new Vue({
+            el: '#app2',
+            data: {
+                message: 'outer data'
+            }
+        });
+
+        const app3 = new Vue({
+            el: '#app3',
+            data: {
+                currentView: 'componentA'
+            },
+            components: {
+                componentA: {
+                    template: '<div>组件A</div>'
+                },
+                componentB: {
+                    template: '<div>组件B</div>'
+                },
+                componentC: {
+                    template: '<div>组件C</div>'
+                },
+            },
+            methods: {
+                handleChangeView: function(component) {
+                    this.currentView = 'component' + component;
+                }
+            },
+        });
+
+        Vue.component("app4-component", function (resolve, reject) {
+            window.setTimeout(() => {
+                resolve({
+                    template: '<div>我是异步渲染的!</div>'
+                });
+            }, 2000);
+        });
+        const app4 = new Vue({
+            el: '#app4'
+        });
+
+        
+
+    </script>
+</body>
+
+</html>

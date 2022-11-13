@@ -1,0 +1,192 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>使用slot分发内容</title>
+    <script src="https://cdn.jsdelivr.net/npm/vue@2/dist/vue.js"></script>
+</head>
+
+<body>
+    <p>------------------------------ app1 父组件和子组件的编译作用域 ----------------------------</p>
+    <div id="app1">
+        <app1-component v-show="show_child">
+            {{show_child}}
+        </app1-component>
+    </div>
+    
+    <p>------------------------------ app2 子组件 单个slot 的使用 ----------------------------</p>
+    <div id="app2">
+        <app2-component>
+            <p>分发的内容</p>
+            <p>更多的内容</p>   
+        </app2-component>
+    </div>
+
+    <p>------------------------------ app3 子组件 具名slot 的使用 ----------------------------</p>
+    <div id="app3">
+        <app3-component>
+            <h2 slot="header">标题</h2>
+            <p>分发的内容</p>
+            <p>更多的内容</p>   
+            <div slot="footer">底部信息</div>
+        </app3-component>
+    </div>
+    
+    <p>------------------------------ app4 作用域插槽的使用, 使用临时变量 props 访问子组件中的数据 ----------------------------</p>
+    <div id="app4">
+        <app4-component>
+            <template scope="props">
+                <p>分发的内容</p>
+                <p>{{props.msg}}</p>   
+            </template>
+        </app4-component>
+    </div>
+    
+    <p>------------------------------ app5 作用域 slot 和 ul li 标签配合使用 ----------------------------</p>
+    <div id="app5">
+        <app5-component :books="books">
+            <template slot="book" scope="props">
+                <li slot="book">{{props.book_name}} --- {{props.book_author}}</li>
+            </template>
+        </app5-component>
+    </div>
+    
+    <p>------------------------------ app6 访问 slot ----------------------------</p>
+    <div id="app6">
+        <app6-component>
+            <h2 slot="header">标题</h2>
+            <p>分发的内容</p>
+            <p>更多的内容</p>   
+            <div slot="footer">底部信息</div>
+        </app6-component>
+    </div>
+
+    
+    
+    <script>
+
+        Vue.component("app1-component", {
+            template: '<div v-show="show_child">子组件内容</div>',
+            data: function() {
+                return {
+                    show_child : true
+                }
+            }
+        });        
+        const app1 = new Vue({
+            el: '#app1',
+            data: {
+                show_child : true
+            }
+        });
+
+        Vue.component("app2-component", {
+            template: 
+                '<div>' + 
+                '<slot>' +
+                '<p>如果父组件没有插入内容, 我将作为默认出现!</p>' +
+                '</slot>' +
+                '</div>'
+            
+        });
+        const app2 = new Vue({
+            el: '#app2',
+            data: {}
+        });
+
+        Vue.component("app3-component", {
+            template: 
+                '<div class="container">' +
+                    '<div class="header">' + 
+                        '<slot name="header"></slot>' + 
+                    '</div>' + 
+                    '<div class="main">' +
+                        '<slot></slot>' + 
+                    '</div>' + 
+                    '<div class="footer">' +
+                        '<slot name="footer"></slot>' + 
+                    '</div>' + 
+                '</div>'
+        });
+        const app3 = new Vue({
+            el: '#app3',
+            data: {}
+        });
+
+        Vue.component("app4-component", {
+            template: 
+                '<div class="container">' +
+                    '<slot msg="来自子组件的内容"></slot>' + 
+                '</div>'
+        });
+        const app4 = new Vue({
+            el: '#app4',
+            data: {}
+        });
+        
+        Vue.component("app5-component", {
+            props: {
+                books: {
+                    type: Array,
+                    default: function() {
+                        return [];
+                    }
+                }
+            },
+            template: 
+            '<ul>' + 
+            '<slot name="book" v-for="book in books" :book_name="book.name" :book_author="book.author"></slot>' + 
+            '</ul>',
+        });
+        const app5 = new Vue({
+            el: '#app5',
+            data: {
+                books: [
+                    { 
+                        name : '《 Vue.js 实战》',
+                        author : '梁澈'
+                    },
+                    { 
+                        name : '《 JavaScript 语言精粹》',
+                        author : 'Douglas Crockford'
+                    },
+                    { 
+                        name : '《 JavaScript 高级程序设计》',
+                        author : 'Nicholas C. Zakas'
+                    },
+                ]
+            }
+        });
+
+        Vue.component("app6-component", {
+            template: 
+                '<div class="container">' +
+                    '<div class="header">' + 
+                        '<slot name="header"></slot>' + 
+                    '</div>' + 
+                    '<div class="main">' +
+                        '<slot></slot>' + 
+                    '</div>' + 
+                    '<div class="footer">' +
+                        '<slot name="footer"></slot>' + 
+                    '</div>' + 
+                '</div>',
+            mounted() {
+                var header = this.$slots.header;
+                var main = this.$slots.default;
+                var footer = this.$slots.footer;
+                console.log("header is :" + header);
+                console.log("footer[0].elm.innerHTML is :" + footer[0].elm.innerHTML);
+            },
+        });
+        const app6 = new Vue({
+            el: '#app6'
+        });
+
+    </script>
+</body>
+
+</html>

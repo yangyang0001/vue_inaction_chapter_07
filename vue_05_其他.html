@@ -1,0 +1,75 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>其他</title>
+    <script src="https://cdn.jsdelivr.net/npm/vue@2/dist/vue.js"></script>
+</head>
+
+<body>
+    <p>------------------------------ app1 异步更新队列 $nextTick() 方法的使用 ----------------------------</p>
+    <div id="app1">
+        <div id="div" v-if="showDiv">div内部内容</div><br/>
+        <button @click="getText">获取div内容</button>
+    </div>
+    
+    <p>------------------------------ app2 x-template ----------------------------</p>
+    <div id="app2">
+        <app2-component></app2-component>
+    </div>
+    <script type="text/x-template" id="app2-component-html">
+        <div>这是组件内容</div>
+    </script>
+    
+    <p>------------------------------ app3 手动挂载组件 ----------------------------</p>
+    <div id="mount-div">
+
+    </div>
+
+
+
+    <script>
+        const app1 = new Vue({
+            el: '#app1',
+            data: {
+                showDiv: false
+            },
+            methods: {
+                getText: function() {
+                    this.showDiv = true;
+                    // TODO: 存在异步更新队列的问题, DOM 并不是直接创建的, 这时候要使用到 $nextTick()
+                    this.$nextTick(function() {
+                        var text = document.getElementById("div").innerHTML;
+                        console.log(text);
+                    });
+                }
+            },
+        });
+
+        Vue.component("app2-component", {
+            template: '#app2-component-html'
+        });
+        const app2 = new Vue({
+            el: '#app2'
+        });
+
+        const app3_component = Vue.extend({
+            template: '<div>Hello: {{name}}</div>',
+            data: function() {
+                return {
+                    name: 'zhangsan'
+                }
+            }
+        });
+        // new app3_component().$mount('#mount-div');
+        new app3_component({
+            el: '#mount-div'
+        });
+
+    </script>
+</body>
+
+</html>
