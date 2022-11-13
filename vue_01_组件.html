@@ -11,58 +11,59 @@
 
 <body>
 
-    <!-- 全局组件的使用 -->
+    <p>------------------------------ app1 全局组件的使用 ----------------------------</p>
     <div id="app1">
         <my-component></my-component>
     </div>
     
-    <!-- 局部组件的使用 -->
+    <p>------------------------------ app2 局部组件的使用 ----------------------------</p>
     <div id="app2">
         <my-component></my-component>
     </div>
     
-    <!-- 引用组件的特殊形式 is -->
+    <p>------------------------------ app3 引用组件的特殊形式 is  ----------------------------</p>
     <div id="app3">
         <table>
             <tbody is="my-component"></tbody>
         </table>
     </div>
     
-    <!-- 组件数据 必须使用 function 且 return 对象 -->
+    <p>------------------------------ app4 组件数据 必须使用 function 且 return 对象 ----------------------------</p>
     <div id="app4">
         <data-component></data-component>
     </div>
     
-    <!-- 组件数据 全局数据的使用 -->
+    <p>------------------------------ app5 组件数据 全局数据的使用  ----------------------------</p>
     <div id="app5">
         <data-component-counter></data-component-counter>
         <data-component-counter></data-component-counter>
         <data-component-counter></data-component-counter>
     </div>
     
-    <!-- 组件数据 每个组件都使用自己的数据 -->
+    <p>------------------------------ app6 组件数据 每个组件都使用自己的数据 ----------------------------</p>
     <div id="app6">
         <data-component-inner></data-component-inner>
         <data-component-inner></data-component-inner>
         <data-component-inner></data-component-inner>
     </div>
     
-    <!-- 组件数据的传递, 从父组件向子组件传递使用 props 属性 -->
+    <p>------------------------------ app7 组件数据的传递, 从父组件向子组件传递使用 props 属性 ----------------------------</p>
     <div id="app7">
         <static-data-component message="static-data"></static-data-component>
     </div>
     
-    <!-- 组件数据的传递, 从父组件向子组件传递使用 props 属性, 传递动态数据, v-bind -->
+    <p>------------------------------ app8 组件数据的传递, 从父组件向子组件传递使用 props 属性, 传递动态数据, v-bind ----------------------------</p>
     <div id="app8">
         <input type="text" v-model="message" placeholder="请输入组件内容..."></input>
         <dynamic-data-component :message="message"></dynamic-data-component>
     </div>
-
-    <!-- 单向数据流 -->
+    
+    <p>------------------------------ app9 单向数据流 ----------------------------</p>
     <div id="app9">
         <props-component :init_count="100"></props-component>
     </div>
-
+    
+    <p>------------------------------ app10 计算属性 ----------------------------</p>
     <div id="app10">
         <computed-component :width="100"></computed-component>
     </div>
@@ -192,42 +193,42 @@
         });
 
         // TODO: 暂时提供一个 校验的代码形式, 后面通过 案例进行使用!
-        Veu.component("mine-check-component", {
-            props: {
-                // 必须是数字类型
-                propA : Number,
+        // Veu.component("mine-check-component", {
+        //     props: {
+        //         // 必须是数字类型
+        //         propA : Number,
 
-                // 必须是字符串或数字类型
-                propB : [String, Number],
+        //         // 必须是字符串或数字类型
+        //         propB : [String, Number],
 
-                // 布尔值，如果没有定义，默认值就是 true
-                propC: {
-                    type : Boolean,
-                    default : true
-                },
+        //         // 布尔值，如果没有定义，默认值就是 true
+        //         propC: {
+        //             type : Boolean,
+        //             default : true
+        //         },
 
-                // 数字，而且是必传
-                propD: {
-                    type: Number,
-                    required : true
-                },
+        //         // 数字，而且是必传
+        //         propD: {
+        //             type: Number,
+        //             required : true
+        //         },
 
-                // 如果是数组或对象，默认值必须是一个函数来返回
-                propE: {
-                    type : Array,
-                    default : function () {
-                        return [] ;
-                    }
-                },
+        //         // 如果是数组或对象，默认值必须是一个函数来返回
+        //         propE: {
+        //             type : Array,
+        //             default : function () {
+        //                 return [] ;
+        //             }
+        //         },
 
-                // 自定义一个验证函数
-                propF: {
-                    validator : function (value) {
-                        return value > 10;
-                    }
-                }
-            }
-        });
+        //         // 自定义一个验证函数
+        //         propF: {
+        //             validator : function (value) {
+        //                 return value > 10;
+        //             }
+        //         }
+        //     }
+        // });
 
 
     </script>
