@@ -1,0 +1,70 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>侦听器</title>
+    <script src="https://cdn.jsdelivr.net/npm/vue@2/dist/vue.js"></script>
+    <script src="js/jquery.min.js"></script>
+</head>
+
+<body>
+
+    <div id="app1">
+        <input type="text" v-model="username" placeholder="请输入用户名..."></input>    <br/><br/>
+        <input type="text" v-model="student.username" placeholder="请输入学生姓名..."></input>
+    </div>
+
+    <script>
+        const app1 = new Vue({
+            el: '#app1',
+            data: {
+                username: 'zhangsan',
+                student: {
+                    username: 'lisi'
+                }
+            },
+            methods: {},
+            watch: {
+
+                // 方法格式的监听器! 缺点: 在首次进入页面时, 不会自动触发, TODO: 但推荐使用!
+                username: function(newVal, oldVal) {
+                    console.log('--------------------------------------------------');
+                    console.log("newVal is :" + newVal + ", oldVal is :" + oldVal);
+                    // 可以在数据变化时, 进行校验用户名是否已经存在!
+                    // $.get('http://localhost:8080/finduser/' + newVal, function(result) {
+                    //     console.log(result);
+                    // });
+                },
+                    
+                // 对象格式的监听器!
+                // username: {
+                //     handler(newVal, oldVal) {
+                //         console.log("newVal   is :" + newVal + ", oldVal   is :" + oldVal);
+                //     },
+                //     immediate: true
+                // }
+
+                // ------------------------------------------以下是侦听 对象和对象属性的 方式-----------------------------
+                // 用 '' 将对象引用起来!
+                'student.username': function(newVal, oldVal) {
+                    console.log("newVal is :" + newVal + ", oldVal is :" + oldVal); 
+                },
+
+                // 监听student对象的变化, 只要 student 中有属性变化就会触发监听器
+                student: {
+                    handler(newVal) {
+                        console.log("newVal is :" + newVal);
+                    },
+                    // 开启深度侦听
+                    deep: true
+                },
+            }
+        });
+    </script>
+
+</body>
+
+</html>

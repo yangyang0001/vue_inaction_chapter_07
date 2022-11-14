@@ -235,7 +235,7 @@
 
         Vue.component("app6-component", {
             props:['value'],
-            template: '<input :value="value" :input="bindData"></input>',
+            template: '<input :value="value" @input="bindData"></input>',
             methods: {
                 bindData: function(event) {
                     this.$emit('input', event.target.value);
