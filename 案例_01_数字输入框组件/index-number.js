@@ -30,7 +30,7 @@ Vue.component("input-number", {
             current: this.value
         }
     },
-    // 监听函数, 监听变量 current 的变化, 同步到父组件 current 中!
+    // 侦听器, 监听变量 current 的变化, 同步到父组件 current 中!
     watch: {
         current: function(val) {
             console.log('watch current method invoke, val is :' + val);

@@ -1,0 +1,34 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ajax 和 axios</title>
+    <script src="https://cdn.jsdelivr.net/npm/vue@2/dist/vue.js"></script>
+    <script src="js/jquery.min.js"></script>
+    <script src="js/axios.min.js"></script>
+    
+</head>
+
+<body>
+
+    <script>
+        // TODO: 存在跨域问题没有解决, 域可以参考 java_computer_network 工程, 这个以后在解决!
+        axios({
+            method: 'GET',
+            url: 'http://localhost:8080/json',
+            headers: {
+                "Content-Type": "application/octet-stream",
+                "Access-Control-Allow-Origin": "http://localhost:8080/json",
+                "Access-Control-Allow": "*"
+            }
+        }).then(function(response){
+            console.log(response);
+        });
+    </script>
+
+</body>
+
+</html>
