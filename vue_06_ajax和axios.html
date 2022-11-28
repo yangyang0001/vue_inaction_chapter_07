@@ -15,13 +15,12 @@
 <body>
 
     <script>
-        // TODO: 存在跨域问题没有解决, 域可以参考 java_computer_network 工程, 这个以后在解决!
         axios({
             method: 'GET',
             url: 'http://localhost:8888/getBooks',
             headers: {
                 "Content-Type": "application/octet-stream",
-                "Access-Control-Allow-Origin": "http://localhost:8080/json",
+                "Access-Control-Allow-Origin": "http://localhost:8888/getBooks",
                 "Access-Control-Allow": "*"
             }
         }).then(function(response){
